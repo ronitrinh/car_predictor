@@ -4,6 +4,7 @@ import pandas as pd
 import os
 import re
 import sys
+import time
 website = 'https://www.thecarconnection.com'
 template = 'https://images.hgmsites.net/'
 custom_header = {
@@ -21,21 +22,23 @@ def fetch(page, addition=''):
 def all_makes():
     all_makes_list = []
     make_selections = fetch(website, "/new-cars").find("div", {"class": "rowContent"})
-    for option in make_selections.find_all("a")[1:]:
+    for option in make_selections.find_all("a"):
         all_makes_list.append(option['href'])
     return all_makes_list
 
 
 def make_menu(listed):
     make_menu_list = []
-    for make in listed: 
-        for div in fetch(website, make).find_all("div", {"class": "name"}):
+    for make in listed:
+        time.sleep(1)
+        for div in fetch(website, make).find_all("div", {"class": "makeModelListContainer"}):
             make_menu_list.append(div.find_all("a")[0]['href'])
     return make_menu_list
 
 
 def model_menu(listed):
     model_menu_list = []
+    # example_make = "/cars/acura_rdx"
     for make in listed:
         soup = fetch(website, make)
         for div in soup.find_all("a", {"class": "btn avail-now first-item"}):
@@ -89,10 +92,14 @@ def run(directory):
 
 
 if __name__ == '__main__':
-    print("Debugging code")
     car_makes = all_makes()
     for make in car_makes:
         print(make)
+    print("Debugging code")
+    makes_menu = make_menu(car_makes)
+    for make in makes_menu:
+        print(make, flush=True)
+
 
     print("Finished making requests")
 
