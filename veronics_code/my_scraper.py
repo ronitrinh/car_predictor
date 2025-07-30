@@ -38,12 +38,10 @@ def make_menu(listed):
 
 def model_menu(listed):
     model_menu_list = []
-    # example_make = "/cars/acura_rdx"
     for make in listed:
-        soup = fetch(website, make)
-        for div in soup.find_all("a", {"class": "btn avail-now first-item"}):
-            model_menu_list.append(div['href'])
-        for div in soup.find_all("a", {"class": "btn 1"})[:8]:
+        time.sleep(1)
+        year_selections = fetch(website, make).find("div", {"class": "year-selector"})
+        for div in year_selections.find_all("a"):
             model_menu_list.append(div['href'])
     model_menu_list = [i.replace('overview', 'specifications') for i in model_menu_list]
     return model_menu_list
@@ -93,16 +91,11 @@ def run(directory):
 
 if __name__ == '__main__':
     car_makes = all_makes()
-    for make in car_makes:
-        print(make)
-    print("Debugging code")
     makes_menu = make_menu(car_makes)
-    for make in makes_menu:
-        print(make, flush=True)
-
-
-    print("Finished making requests")
-
+    car_menu = model_menu(makes_menu)
+    pd.DataFrame(car_menu).to_csv('veronics_code/c.csv', header=None)
+    d = pd.read_csv('veronics_code/c.csv', index_col=0, header=None).values.ravel()
+    
 
 
     # if not os.path.isdir(sys.argv[1]):
